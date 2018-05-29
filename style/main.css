@@ -1,5 +1,9 @@
 /* Main CodeDojo Site CSS Document */
 
+html {
+  padding: 0px;
+}
+
 body {
   font-family: arial;
   padding: 0px; /* .container is used for the alternative body. */
