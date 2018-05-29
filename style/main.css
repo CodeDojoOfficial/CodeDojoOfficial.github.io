@@ -1,0 +1,11 @@
+/* Main CodeDojo Site CSS Document */
+
+body {
+  font-family: arial;
+}
+
+.header {
+  background: #333;
+  text-align: center;
+  color: #FFF;
+}
