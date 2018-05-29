@@ -2,6 +2,11 @@
 
 body {
   font-family: arial;
+  padding: 0px; /* .container is used for the alternative body. */
+}
+
+.container {
+  padding: 8px;
 }
 
 .header {
