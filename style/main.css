@@ -1,10 +1,5 @@
 /* Main CodeDojo Site CSS Document */
 
-html {
-  padding: none;
-  margin: none;
-}
-
 body {
   font-family: arial;
   margin: 0px; /* .container is used for the alternative body. */
@@ -18,4 +13,5 @@ body {
   background: #333;
   text-align: center;
   color: #FFF;
+  padding: 8px;
 }
