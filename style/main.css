@@ -5,17 +5,50 @@ body {
   margin: 0px; /* .container is used for the alternative body. */
 }
 
+.header a {
+  color: #EEE;
+  text-decoration: none;
+}
+
 .container {
   padding: 8px;
 }
 
 .header {
-  background: #333;
+  color: #EEE;
+  background: #232323;
+  width: 100%;
+  padding-top: 8px;
   text-align: center;
-  color: #FFF;
-  padding: 8px;
+  padding-bottom: 8px;
+  position: fixed;
+  top: 0px;
 }
 
 .header h1 {
   font-size: 30px;
+}
+
+.header ul {
+  list-style-type: none;
+  margin-left: 0px;
+  padding: 0px;
+  overflow: hidden;
+  background-color: #444;
+  margin-top: 8px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 20px;
+}
+
+.header ul li {
+  float: left;
+  display: block;
+}
+
+.header ul li a {
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
 }

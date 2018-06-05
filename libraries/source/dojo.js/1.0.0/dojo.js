@@ -18,6 +18,18 @@ let paintStroke = "rgba(0, 0, 0, 1)";
 
 let translationX;
 let translationY;
+let strokeWeight = 1;
+let rotateMode = 2 * Math.PI;
+
+const PI = Math.PI;
+const TWO_PI = 2 * PI;
+const THREE_PI = 3 * PI;
+const TEN_PI = 10 * PI;
+const HUNDRED_PI = 10 * TEN_PI;
+const TAU = TWO_PI;
+
+const RADIANS = TWO_PI;
+const DEGREES = 360;
 
 /**
  * Creates the canvas and canvas context used to draw on the window.
@@ -125,12 +137,36 @@ function setPixel(x, y, red, green, blue, alpha) {
   alpha = clamp(alpha, 0, 255);
   
   canvasContext.fillStyle = "rgba(" + red + ", " + green + ", " + blue + ", " + map(alpha, 0, 255, 0, 1) + ")";
-  canvasContext.fillRect(x, y, 0, 0);
+  canvasContext.fillRect(x, y, 1, 1);
 }
 
 function point(x, y) {
   canvasContext.fillStyle = paintStroke;
-  canvasContext.
+  canvasContext.beginPath();
+  canvasContext.arc(x + translationX, y + translationY, strokeWeight, 0, TWO_PI);
+  canvasContext.fill();
+}
+
+function line(x1, y1, x2, y2) {
+  canvasContext.fillStyle = paintStroke;
+  canvasContext.beginPath();
+  canvasContext.moveTo(x1 + translationX, y1 + translationY);
+  canvasContext.lineTo(x2 + translationX, y2 + translationY);
+  canvasContext.stroke();
+  canvasContext.moveTo(translationX, translationY);
+}
+
+function rect(x, y, rectWidth, rectHeight) {
+  canvasContext.fillStyle = paintStroke;
+  line(x, y, x + rectWidth, y);
+  line(x + rectWidth, y, x + rectWidth, y + rectHeight);
+  line(x + rectWidth, y + rectHeight, x, y + rectHeight);
+  line(x, y + rectHeight, x, y);
+  
+  canvasContext.fillStyle = paintFill;
+  canvasContext.beginPath();
+  canvasContext.moveTo(x + 1 + translationX, y + 1 + translationY);
+  canvasContext.lineTo();
 }
 
 function wait(millis, func) {
@@ -180,6 +216,16 @@ function clamp(value, minimum, maximum) {
     return value;
 }
 
+function rotateMode(mode) {
+  if(mode === RADIANS) {
+    rotateMode = RADIANS;
+  } else if(mode === DEGREES) {
+    rotateMode = DEGREES;
+  } else {
+    console.error("Inappropriate value");
+  }
+}
+
 window.onload = function() {
   try {
     
@@ -191,3 +237,4 @@ window.onload = function() {
     //console.info("Not every command is used.");
   }
 }
+
