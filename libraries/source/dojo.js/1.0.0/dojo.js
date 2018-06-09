@@ -3,12 +3,12 @@
  * DO NOT REMOVE THIS NOTICE.
  */
 
-let _ = document; // Used for systematic purposes although can be used in dojo projects.
+let _ = document;
 let $h = document.head;
 let $b = document.body;
 
-let canvas;
-let canvasContext;
+let canvas = null;
+let canvasContext = null;
 let width;
 let height;
 let fps = 30;
@@ -18,14 +18,14 @@ let paintStroke = "rgba(0, 0, 0, 1)";
 
 let translationX;
 let translationY;
-let strokeWeight = 1;
+let lineWidth = 1;
 let rotateMode = 2 * Math.PI;
+let rotation = 0; // In RADIANS no matter what.
 
+const QUARTER_PI = .25 * Math.PI;
+const HALF_PI = .5 * Math.PI;
 const PI = Math.PI;
 const TWO_PI = 2 * PI;
-const THREE_PI = 3 * PI;
-const TEN_PI = 10 * PI;
-const HUNDRED_PI = 10 * TEN_PI;
 const TAU = TWO_PI;
 
 const RADIANS = TWO_PI;
@@ -45,29 +45,40 @@ const DEGREES = 360;
  * @author Adrian Gjerstad
  * @since 1.0.0
  */
-function createWindow(windowWidth, windowHeight) {
-  canvas = _.createElement("canvas");
-  
-  let widthAttr = _.createAttributeNode("width");
-  let heightAttr = _.createAttributeNode("height");
-  
-  widthAttr.value = Math.abs(windowWidth);
-  heightAttr.value = Math.abs(windowHeight);
-  
-  canvas.setAttributeNode(widthAttr);
-  canvas.setAttributeNode(heightAttr);
-  
-  $b.appendChild(canvas);
-  
-  canvasContext = canvas.getContext("2d");
-  
-  width = Math.abs(windowWidth);
-  height = Math.abs(windowHeight);
-  
-  translationX = 0; // Start at left
-  translationY = 0; // Start at top
-  
-  return canvas;
+function createCanvas(windowWidth, windowHeight) {
+  if(canvas !== undefined) {
+    canvas = _.createElement("canvas");
+    
+    let widthAttr = _.createAttributeNode("width");
+    let heightAttr = _.createAttributeNode("height");
+    
+    widthAttr.value = Math.abs(windowWidth);
+    heightAttr.value = Math.abs(windowHeight);
+    
+    canvas.setAttributeNode(widthAttr);
+    canvas.setAttributeNode(heightAttr);
+    
+    $b.appendChild(canvas);
+    
+    canvasContext = canvas.getContext("2d");
+    
+    width = Math.abs(Math.floor(windowWidth));
+    height = Math.abs(Math.floor(windowHeight));
+    
+    translationX = 0; // Start at left
+    translationY = 0; // Start at top
+    
+    return canvas;
+  }
+}
+
+function noCanvas() {
+  canvas = undefined;
+  canvasContext = undefined;
+}
+
+function getCanvasContextInstance() {
+  return canvasContext.
 }
 
 function noFill() {
@@ -121,15 +132,100 @@ function stroke(red, green, blue, alpha) {
     // RGB full alpha.
     
     paintStroke = "rgba(" + red + ", " + green + ", " + blue + ", 1)";
-  } else {
+  } else if(red !== undefined && green !== undefined && blue !== undefined && alpha !== undefined) {
     // RGB depending alpha.
     
     paintStroke = "rgba(" + red + ", " + green + ", " + blue + ", " + map(alpha, 0, 255, 0, 1) + ")";
+  } else {
+    console.error("Inappropriate number of inputs");
+  }
+}
+
+function strokeWeight(newWeight) {
+  newWeight = Math.floor(Math.abs(newWeight));
+  lineWidth = newWeight;
+}
+
+function angleMode(identifier) {
+  if(identifier === DEGREES) {
+    rotateMode = DEGREES;
+  } else if(identifier === RADIANS) {
+    rotateMode = RADIANS;
+  } else {
+    console.warn("Rotation style was not recognized and was not changed.");
+  }
+}
+
+function degreesToRadians(deg) {
+  deg = deg % 360; // Must limit degrees from 0 to 360.
+
+  return map(deg, 0, 360, 0, TWO_PI);
+}
+
+function radiansToDegrees(rad) {
+  rad = rad % TWO_PI; // Must limit radians from 0 to 2π.
+
+  return map(rad, 0, TWO_PI, 0, 360);
+}
+
+function random(minimum, maximum) {
+  if(minimum === undefined && maximum === undefined) {
+    return random(0, 1);
+  } else if(minimum !== undefined && maximum === undefined) {
+    return random(0, minimum);
+  } else if(minimum !== undefined && maximum !== undefined) {
+    return Math.random(maximum - minimum) + minimum;
+  } else {
+    console.error("Parameter entries were insufficient.");
+  }
+}
+
+function rotate(amount) {
+  if(rotateMode === RADIANS) {
+    rotation = amount;
+  } else if(rotateMode === DEGREES) {
+    rotation = degreesToRadians(amount);
+  } else {
+    console.warn("Could not read the angle mode. No rotation adjustments made.");
   }
 }
 
 
 // DRAW COMMANDS
+function background(red, green, blue, alpha) {
+  red = clamp(red, 0, 255);
+  green = clamp(green, 0, 255);
+  blue = clamp(blue, 0, 255);
+  alpha = clamp(alpha, 0, 255);
+
+  if(red !== undefined && green === undefined && blue === undefined && alpha === undefined) {
+    // Grayscale full alpha.
+    
+    canvasContext.fillStyle = "rgba(" + red + ", " + red + ", " + red + ", 1)";
+  } else if(red !== undefined && green !== undefined && blue === undefined && alpha === undefined) {
+    // Grayscale depending alpha.
+
+    canvasContext.fillStyle = "rgba(" + red + ", " + red + ", " + red + ", " + map(green, 0, 255, 0, 1) + ")";
+  } else if(red !== undefined && green !== undefined && blue !== undefined && alpha === undefined) {
+    // RGB full alpha.
+
+    canvasContext.fillStyle = "rgba(" + red + ", " + green + ", " + blue + ", 1)";
+  } else if(red !== undefined && green !== undefined && blue !== undefined && alpha !== undefined) {
+    // RGB depending alpha.
+
+    canvasContext.fillStyle = "rgba(" + red + ", " + green + ", " + blue + ", " + map(alpha, 0, 255, 0, 1) + ")";
+  } else {
+    console.error("Color values were innapropriate. Minimum parameters: 1, Maximum parameters: 4");
+  }
+
+  canvasContext.beginPath();
+  canvasContext.moveTo(0, 0);
+  canvasContext.lineTo(0, height);
+  canvasContext.lineTo(width, height);
+  canvasContext.lineTo(width, 0);
+  canvasContext.fill();
+}
+
 function setPixel(x, y, red, green, blue, alpha) {
   red = clamp(red, 0, 255);
   green = clamp(green, 0, 255);
@@ -141,37 +237,89 @@ function setPixel(x, y, red, green, blue, alpha) {
 }
 
 function point(x, y) {
-  canvasContext.fillStyle = paintStroke;
+  canvasContext.strokeStyle = paintStroke;
   canvasContext.beginPath();
-  canvasContext.arc(x + translationX, y + translationY, strokeWeight, 0, TWO_PI);
+  canvasContext.arc(x + translationX, y + translationY, lineWidth, 0, TWO_PI);
   canvasContext.fill();
 }
 
 function line(x1, y1, x2, y2) {
-  canvasContext.fillStyle = paintStroke;
+  canvasContext.strokeStyle = paintStroke;
+  canvasContext.lineWidth = lineWidth;
   canvasContext.beginPath();
   canvasContext.moveTo(x1 + translationX, y1 + translationY);
   canvasContext.lineTo(x2 + translationX, y2 + translationY);
   canvasContext.stroke();
-  canvasContext.moveTo(translationX, translationY);
 }
 
 function rect(x, y, rectWidth, rectHeight) {
-  canvasContext.fillStyle = paintStroke;
-  line(x, y, x + rectWidth, y);
-  line(x + rectWidth, y, x + rectWidth, y + rectHeight);
-  line(x + rectWidth, y + rectHeight, x, y + rectHeight);
-  line(x, y + rectHeight, x, y);
-  
-  canvasContext.fillStyle = paintFill;
+  canvasContext.strokeStyle = paintStroke;
+  canvasContext.lineWidth = lineWidth;
   canvasContext.beginPath();
-  canvasContext.moveTo(x + 1 + translationX, y + 1 + translationY);
-  canvasContext.lineTo();
+  canvasContext.moveTo(x + translationX, y + translationY);
+  canvasContext.lineTo(x + rectWidth + translationX, y + translationY);
+  canvasContext.lineTo(x + rectWidth + translationX, y + rectHeight + translationY);
+  canvasContext.lineTo(x + translationX, y + rectHeight + translationY);
+  canvasContext.lineTo(x + translationX, y + translationY);
+  canvasContext.stroke();
+
+  canvasContext.fillStyle = paintFill;
+  canvasContext.lineWidth = 1;
+  canvasContext.beginPath();
+  canvasContext.moveTo(x + translationX + lineWidth, y + translationY + lineWidth);
+  canvasContext.lineTo(x + translationX + rectWidth - lineWidth, y + translationY + lineWidth);
+  canvasContext.lineTo(x + translationX + rectWidth - lineWidth, y + translationY + rectHeight - lineWidth);
+  canvasContext.lineTo(x + translationX + lineWidth, y + translationY + rectHeight - lineWidth);
+  canvasContext.lineTo(x + translationX + lineWidth, y + translationY + lineWidth);
+  canvasContext.fill();
 }
 
+function ellipse(centerX, centerY, radiusX, radiusY) {
+  if(centerX !== undefined && centerY !== undefined && radiusX !== undefined && radiusY === undefined) {
+    radiusY = radiusX; // enables drawing circles with one radius entry.
+  }
+
+  canvasContext.strokeStyle = paintStroke;
+  canvasContext.lineWidth = lineWidth;
+  canvasContext.beginPath();
+  canvasContext.ellipse(centerX + translationX, centerY + translationY, radiusX, radiusY, 0, 0, TWO_PI);
+  canvasContext.stroke();
+
+  canvasContext.fillStyle = paintFill;
+  canvasContext.lineWidth = 1;
+  canvasContext.beginPath();
+  canvasContext.ellipse(centerX + translationX, centerY + translationY, radiusX - (2 * lineWidth), radiusY - (2 * lineWidth), 0, 0, TWO_PI);
+  canvasContext.fill();
+}
+
+function arc(centerX, centerY, radius, startAngle, endAngle, anticlockwise) {
+  canvasContext.strokeStyle = paintStroke;
+  canvasConetxt.lineWidth = lineWidth;
+  canvasContext.beginPath();
+  canvasContext.arc(centerX, centerY, radius, (rotateMode === RADIANS) ? startAngle : degreesToRadians(startAngle), (rotateMode === RADIANS) ? endAngle : degreesToRadians(endAngle), anticlockwise);
+  canvasContext.stroke();
+
+  canvasContext.fillStyle = paintFill;
+  canvasContext.lineWidth = 1;
+  canvasContext.beginPath();
+  canvasContext.arc(centerX, centerY, radius - (2 * lineWidth), (rotateMode === RADIANS) ? startAngle : degreesToRadians(startAngle), (rotateMode === RADIANS) ? endAngle : degreesToRadians(endAngle), anticlockwise);
+  canvasContext.fill();
+}
+
+function text(string, x, y) {
+  canvasContext.strokeStyle = paintStroke;
+  canvasContext.lineWidth = lineWidth;
+  canvasContext.
+}
+
+// THREAD METHODS
 function wait(millis, func) {
   if(millis > 0) {
-    setTimeout(millis, func);
+    try {
+      setTimeout(millis, func);
+    } catch(e) {
+      console.error("Second parameter was not a function.");
+    }
   } else {
     console.error("Wait time cannot be zeroed or negative. Got: " + millis);
   }
@@ -214,16 +362,6 @@ function clamp(value, minimum, maximum) {
     return maximum;
   else
     return value;
-}
-
-function rotateMode(mode) {
-  if(mode === RADIANS) {
-    rotateMode = RADIANS;
-  } else if(mode === DEGREES) {
-    rotateMode = DEGREES;
-  } else {
-    console.error("Inappropriate value");
-  }
 }
 
 window.onload = function() {

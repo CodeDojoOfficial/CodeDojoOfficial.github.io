@@ -21,29 +21,25 @@ body {
   padding-top: 8px;
   text-align: center;
   padding-bottom: 8px;
-  position: fixed;
-  top: 0px;
 }
 
 .header h1 {
-  font-size: 30px;
+  font-size: 3em;
 }
 
 .header ul {
   list-style-type: none;
-  margin-left: 0px;
+  margin: 8px;
   padding: 0px;
   overflow: hidden;
   background-color: #444;
-  margin-top: 8px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  border-radius: 20px;
+  border-radius: 10px;
 }
 
 .header ul li {
   float: left;
   display: block;
+  font-size: 20px;
 }
 
 .header ul li a {
@@ -51,4 +47,50 @@ body {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
+}
+
+#activehost {
+  background: #EEE;
+  color: #444;
+  cursor: default;
+}
+
+.header ul li a:hover:not(#activehost) {
+  background-color: rgba(255, 255, 255, .4);
+}
+
+.container {
+  background-image: url("/image/background.jpg");
+  background-repeat: repeat;
+}
+
+.container a {
+  color: #565656;
+}
+
+.container td, th {
+  border: 1px solid #DDD;
+  background: white;
+  padding: 8px;
+}
+
+.container th {
+  text-align: left;
+}
+
+.container.table-headerrow {
+  font-size: 20px;
+}
+
+.footer {
+  background: #232323;
+  color: #EEE;
+  text-align: center;
+  padding: 40px;
+}
+
+.footer a {
+  color: #EEE;
+  text-decoration: none;
+  font-size: 22px;
 }
