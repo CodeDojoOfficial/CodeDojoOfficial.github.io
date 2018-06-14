@@ -1,7 +1,13 @@
 /* Main CodeDojo Site CSS Document */
 
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web');
+
+html {
+  background: #232323; /* Used in courtesy of Chrome Mobile, where the top bar's color is decided based on the html background-color. */
+}
+
 body {
-  font-family: arial;
+  font-family: 'Titillium Web', sans-serif;
   margin: 0px; /* .container is used for the alternative body. */
 }
 
@@ -64,8 +70,26 @@ body {
   background-repeat: repeat;
 }
 
+.section {
+  background-color: rgba(0, 0, 0, .6);
+  color: #EFEFEF;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  min-height: 100px;
+  width: 50%;
+  padding: 20px;
+}
+
+.section h1 a {
+  font-size: 2em;
+  color: #EFEFEF;
+  text-decoration: none;
+}
+
 .container a {
-  color: #565656;
+  color: #CCC;
 }
 
 .container td, th {

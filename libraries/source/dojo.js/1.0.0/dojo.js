@@ -3,12 +3,12 @@
  * DO NOT REMOVE THIS NOTICE.
  */
 
-let _ = document;
-let $h = document.head;
-let $b = document.body;
+// DOJOJS SYSTEM VARIABLES
+// DO NOT EDIT!
+let dojoJsRuntimeSystem = new DojoJSSystem();
 
-let canvas = null;
-let canvasContext = null;
+let canvas;
+let canvasContext;
 let width;
 let height;
 let fps = 30;
@@ -22,6 +22,12 @@ let lineWidth = 1;
 let rotateMode = 2 * Math.PI;
 let rotation = 0; // In RADIANS no matter what.
 
+let textSize = 16;
+
+let mouseX = 0;
+let mouseY = 0;
+let keyCode;
+
 const QUARTER_PI = .25 * Math.PI;
 const HALF_PI = .5 * Math.PI;
 const PI = Math.PI;
@@ -30,6 +36,28 @@ const TAU = TWO_PI;
 
 const RADIANS = TWO_PI;
 const DEGREES = 360;
+
+const BACKSPACE = 0x08;
+const TAB = 0x09;
+const RETURN = 0x0A;
+const ESCAPE = 0x1B;
+
+const SPACE = 0x20;
+const QUOTE = 0x27;
+const COMMA = 0x2C;
+const MINUS = 0x2D;
+const PERIOD = 0x2E;
+const SLASH = 0x2F;
+const ZERO = 0x30;
+const ONE = 0x31;
+const TWO = 0x32;
+const THREE = 0x33;
+const FOUR = 0x34;
+const FIVE = 0x35;
+const SIX = 0x36;
+const SEVEN = 0x37;
+const EIGHT = 0x38;
+const NINE = 0x39;
 
 /**
  * Creates the canvas and canvas context used to draw on the window.
@@ -45,40 +73,33 @@ const DEGREES = 360;
  * @author Adrian Gjerstad
  * @since 1.0.0
  */
-function createCanvas(windowWidth, windowHeight) {
-  if(canvas !== undefined) {
-    canvas = _.createElement("canvas");
-    
-    let widthAttr = _.createAttributeNode("width");
-    let heightAttr = _.createAttributeNode("height");
-    
-    widthAttr.value = Math.abs(windowWidth);
-    heightAttr.value = Math.abs(windowHeight);
-    
-    canvas.setAttributeNode(widthAttr);
-    canvas.setAttributeNode(heightAttr);
-    
-    $b.appendChild(canvas);
-    
-    canvasContext = canvas.getContext("2d");
-    
-    width = Math.abs(Math.floor(windowWidth));
-    height = Math.abs(Math.floor(windowHeight));
-    
-    translationX = 0; // Start at left
-    translationY = 0; // Start at top
-    
-    return canvas;
-  }
-}
-
-function noCanvas() {
-  canvas = undefined;
-  canvasContext = undefined;
+function createCanvas(windowWidth, windowHeight) { 
+  canvas = document.createElement("canvas");
+  
+  let widthAttr = document.createAttribute("width");
+  let heightAttr = document.createAttribute("height");
+  
+  widthAttr.value = Math.abs(windowWidth);
+  heightAttr.value = Math.abs(windowHeight);
+  
+  canvas.setAttributeNode(widthAttr);
+  canvas.setAttributeNode(heightAttr);
+  
+  document.body.appendChild(canvas);
+  
+  canvasContext = canvas.getContext("2d");
+  
+  width = Math.abs(Math.floor(windowWidth));
+  height = Math.abs(Math.floor(windowHeight));
+  
+  translationX = 0; // Start at left
+  translationY = 0; // Start at top
+  
+  return canvas;
 }
 
 function getCanvasContextInstance() {
-  return canvasContext.
+  return canvasContext;
 }
 
 function noFill() {
@@ -190,6 +211,16 @@ function rotate(amount) {
   }
 }
 
+function fontSize(size) {
+  
+  if(size > 5) {
+    textSize = size;
+  } else {
+    console.log("Cannot go below 6pt.");
+  }
+
+}
+
 
 // DRAW COMMANDS
 function background(red, green, blue, alpha) {
@@ -244,15 +275,21 @@ function point(x, y) {
 }
 
 function line(x1, y1, x2, y2) {
+  canvasContext.rotate(rotation);
+  
   canvasContext.strokeStyle = paintStroke;
   canvasContext.lineWidth = lineWidth;
   canvasContext.beginPath();
   canvasContext.moveTo(x1 + translationX, y1 + translationY);
   canvasContext.lineTo(x2 + translationX, y2 + translationY);
   canvasContext.stroke();
+  
+  canvasContext.rotate(-rotation); // Reset rotation
 }
 
 function rect(x, y, rectWidth, rectHeight) {
+  canvasContext.rotate(rotation);
+  
   canvasContext.strokeStyle = paintStroke;
   canvasContext.lineWidth = lineWidth;
   canvasContext.beginPath();
@@ -272,9 +309,13 @@ function rect(x, y, rectWidth, rectHeight) {
   canvasContext.lineTo(x + translationX + lineWidth, y + translationY + rectHeight - lineWidth);
   canvasContext.lineTo(x + translationX + lineWidth, y + translationY + lineWidth);
   canvasContext.fill();
+  
+  canvasContext.rotate(-rotation);
 }
 
 function ellipse(centerX, centerY, radiusX, radiusY) {
+  canvasContext.rotate(rotation);
+  
   if(centerX !== undefined && centerY !== undefined && radiusX !== undefined && radiusY === undefined) {
     radiusY = radiusX; // enables drawing circles with one radius entry.
   }
@@ -290,9 +331,13 @@ function ellipse(centerX, centerY, radiusX, radiusY) {
   canvasContext.beginPath();
   canvasContext.ellipse(centerX + translationX, centerY + translationY, radiusX - (2 * lineWidth), radiusY - (2 * lineWidth), 0, 0, TWO_PI);
   canvasContext.fill();
+  
+  canvasContext.rotate(-rotation);
 }
 
 function arc(centerX, centerY, radius, startAngle, endAngle, anticlockwise) {
+  canvasContext.rotate(rotation);
+  
   canvasContext.strokeStyle = paintStroke;
   canvasConetxt.lineWidth = lineWidth;
   canvasContext.beginPath();
@@ -304,12 +349,21 @@ function arc(centerX, centerY, radius, startAngle, endAngle, anticlockwise) {
   canvasContext.beginPath();
   canvasContext.arc(centerX, centerY, radius - (2 * lineWidth), (rotateMode === RADIANS) ? startAngle : degreesToRadians(startAngle), (rotateMode === RADIANS) ? endAngle : degreesToRadians(endAngle), anticlockwise);
   canvasContext.fill();
+  
+  canvasContext.rotate(-rotation);
 }
 
 function text(string, x, y) {
+  canvasContext.rotate(rotation);
+  
   canvasContext.strokeStyle = paintStroke;
   canvasContext.lineWidth = lineWidth;
-  canvasContext.
+  canvasContext.fillStyle = paintFill;
+  canvasContext.font = textSize + "pt Arial";
+  canvasContext.fillText(string, x, y);
+  canvasContext.strokeText(string, x, y);
+  
+  canvasContext.rotate(-rotation);
 }
 
 // THREAD METHODS
@@ -364,13 +418,54 @@ function clamp(value, minimum, maximum) {
     return value;
 }
 
+class DojoJSSystem {
+  
+  constructor() {
+    
+  }
+
+  initializeEventHandlers() {
+    
+    if(canvas !== undefined && canvas !== null) {
+      
+      try {
+        
+        // Mouse events
+        canvas.addEventListener("click", mouseClicked);
+        canvas.addEventListener("dblclick", mouseDoubleClicked);
+        canvas.addEventListener("mouseover", mouseOver);
+        canvas.addEventListener("mouseout", mouseOut);
+        canvas.addEventListener("wheel", middleMouseButtonClicked);
+        canvas.addEventListener("auxclick", nonPrimaryMouseButtonClicked);
+        canvas.addEventListener("mousedown", mousePressed);
+        canvas.addEventListener("mouseup", mouseReleased);
+        canvas.addEventListener("contextmenu", rightMouseButtonClicked);
+
+        // Keyboard events
+        canvas.addEventListener("keydown", keyPressed);
+        canvas.addEventListener("keypress", keyDown);
+        canvas.addEventListener("keyup", keyReleased);
+        
+      } catch(e) {
+        
+      }
+    }
+
+  }
+  
+  systemPropertyClock() {
+    
+  }
+
+}
+
 window.onload = function() {
   try {
     
     setup();
     
     clock = setInterval(1000/fps, paint);
-    
+
   } catch(e) {
     //console.info("Not every command is used.");
   }
