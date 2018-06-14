@@ -1,0 +1,9 @@
+{
+  "data-structures": {
+    "stacks": {
+      "title": "Featured Article: Stacks",
+      "content": "A stack is a data structure, similar to an array. But there is one key difference. Let's start here. Say you have a stack of papers. If you add a paper to the stack. Keep in mind that you add it to the end, not at the bottom, as that would be hard. To work on the papers, you would go from top to bottom, therefore removing papers. The terminology for these is <code>push()</code> for adding on to the stack, and <code>pop()</code> for removing from the stack. In a stack, you will still have your basic array commands. Its kind of like if you have a class called MyStack that inherits from MyArray. In the end, the only advantage for a stack versus an array is that a stack gives you the ability to remove from the last item in the stack. Our challenge to you is to create a program that takes use of a stack at least once. Email it to us at <a href='mailto:codedojoofficial@gmail.com'>codedojoofficial@gmail.com</a> with the source code. Don't worry, we can compile C++ and Java."
+    }
+  }
+}
+
