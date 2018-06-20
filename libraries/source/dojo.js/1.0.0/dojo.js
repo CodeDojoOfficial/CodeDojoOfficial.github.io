@@ -245,7 +245,6 @@ function createCanvas(windowWidth, windowHeight) {
  * @since 1.0.0
  */
 function updateKeyCode(e) {
-  console.log("Key Down");
   keyCode = e.keyCode || e.which;
 }
 
