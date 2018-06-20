@@ -929,6 +929,6 @@ window.onload = function() {
 
   let keyDetectorAttr = document.createAttribute("onkeydown");
   keyDetectorAttr.value = "updateKeyCode(event)";
-  document.body.setAttribute(keyDetectorAttr);
+  document.body.setAttributeNode(keyDetectorAttr);
 }
 
